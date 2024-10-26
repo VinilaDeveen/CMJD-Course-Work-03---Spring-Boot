@@ -2,18 +2,11 @@ package com.example.pos.security;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
-import com.example.pos.entity.Customer;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -23,7 +16,6 @@ import io.jsonwebtoken.security.Keys;
 
 @Configuration
 public class JwtUtils {
-
     
     @Value("${app.secret}")
     private String secret;
@@ -33,29 +25,18 @@ public class JwtUtils {
     }
 
     public String generateJwtToken(Authentication authentication) {
-        UserDetails user = (UserDetails) authentication.getPrincipal();
-        List<String> roles = user.getAuthorities().stream()
-                                .map(GrantedAuthority::getAuthority)
-                                .collect(Collectors.toList());
 
+        UserDetails user = (UserDetails) authentication.getPrincipal();
+
+        //generate JWT Token from user detail above
         return Jwts.builder()
                 .setSubject(user.getUsername())
-                .claim("roles", roles)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(new Date().getTime() + 1000 * 60 * 60 * 24)) // expires in 24 hours
+                .setExpiration(new Date(new Date().getTime() + 1000 * 60 * 60 * 24)) //expire in 24 hours
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();
-    }
 
-    public List<String> extractRolesFromJwt(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("roles", List.class);
     }
-
 
     public boolean validateJwtToken(String token) {
         try {

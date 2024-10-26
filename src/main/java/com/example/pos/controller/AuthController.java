@@ -46,8 +46,6 @@ public class AuthController {
 
     @PostMapping("auth/register")
     public ResponseEntity<String> registerUser(@RequestBody Customer customer) {
-        customer.setRoles(Collections.singletonList("ADMIN"));
-
         customerService.createCustomer(customer);
 
         return ResponseEntity.ok("User registered successfully!");

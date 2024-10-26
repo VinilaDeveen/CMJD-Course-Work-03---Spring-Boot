@@ -20,7 +20,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableMethodSecurity
@@ -59,32 +58,33 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public CorsFilter corsFilter() {
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowCredentials(true);
+        configuration.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOriginPattern("*"); // You can change this to specific domains (e.g., http://localhost:3000)
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
-        source.registerCorsConfiguration("/**", config);
-        return new CorsFilter(source);
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
         security.csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // Allow open access to login and registration
-                        .requestMatchers("/api/v1/sale/**").hasRole("USER") // Allow access to sales for users with USER role
-                        .anyRequest().hasRole("ADMIN")) // Restrict all other requests to ADMIN role
-                .authenticationProvider(provider()) // Set the custom authentication provider
-                .addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class); // Add JWT filter before username-password filter
-    
+                .authorizeHttpRequests(
+                        auth -> auth
+                                .requestMatchers("auth/**", "auth/register" , "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+                                .permitAll()
+                                .anyRequest().authenticated());
+
+        
+        security.authenticationProvider(provider());
+        security.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+        
+
         return security.cors(Customizer.withDefaults()).build();
     }
-    
-
-
 
 }

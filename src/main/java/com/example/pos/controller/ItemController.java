@@ -24,7 +24,7 @@ import com.example.pos.service.ItemService;
 
 @RestController
 @RequestMapping("api/v1/item")
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 public class ItemController {
     @Autowired
     private ItemService itemService;
@@ -33,7 +33,6 @@ public class ItemController {
     private CategoryService categoryService;
 
     @PostMapping("")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Item> createItem(@RequestBody ItemDto itemDto) {
         Item item = new Item();
         item.setName(itemDto.getName());
@@ -49,19 +48,16 @@ public class ItemController {
     }
 
     @GetMapping("")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<ItemDto>> getAllItems() {
         return ResponseEntity.status(200).body(itemService.getAllItems());
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ItemDto getByIdItem(@PathVariable Long id) {
         return itemService.getByIdItem(id);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Item> updateItem(@PathVariable Long id, @RequestBody ItemDto itemDto) {
         Item item = new Item();
         item.setName(itemDto.getName());
@@ -78,7 +74,6 @@ public class ItemController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCustomer(@PathVariable Long id) {
         itemService.deleteItem(id);
     }

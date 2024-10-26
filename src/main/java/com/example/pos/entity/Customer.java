@@ -36,8 +36,6 @@ public class Customer {
     @Column(unique = true)
     private String username;
 
+    @Column(nullable = true)
     private String password;
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> roles = new ArrayList<>();
 }

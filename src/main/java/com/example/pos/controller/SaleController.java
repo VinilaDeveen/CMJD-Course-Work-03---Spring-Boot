@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +21,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
 @RequestMapping("api/v1/sale")
-//@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*")
 public class SaleController {
 
     @Autowired
     private SaleService saleService;
 
     @PostMapping("")
-    @PreAuthorize("hasRole('USER','ADMIN')") // Allow only users with the USER role
     public ResponseEntity<String> createSale(@RequestBody SaleDto saleDto) {
         try {
             String response = saleService.creatSale(saleDto);
@@ -40,8 +38,6 @@ public class SaleController {
     }
 
     @GetMapping("/{saleId}")
-    
-    @PreAuthorize("hasRole('USER','ADMIN')") // Allow only users with the USER role
     public ResponseEntity<Sale> getSaleById(@PathVariable Long saleId) {
         try {
             Sale sale = saleService.getSaleDetailById(saleId);
@@ -52,13 +48,11 @@ public class SaleController {
     }
 
     @GetMapping("")
-    @PreAuthorize("hasRole('USER','ADMIN')") // Allow only users with the USER role
     public ResponseEntity<List<Sale>> getAllSales() {
         return ResponseEntity.status(200).body(saleService.getAllSales());
     }
 
     @DeleteMapping("/{saleId}")
-    @PreAuthorize("hasRole('ADMIN')") // Allow only admins
     public void deleteCustomer(@PathVariable Long saleId) {
         saleService.deleteSale(saleId);
     }
