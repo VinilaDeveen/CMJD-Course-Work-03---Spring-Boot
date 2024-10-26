@@ -30,10 +30,11 @@ public class SaleServiceImpl implements SaleService {
     public String creatSale(SaleDto saleDto) {
         Sale sale = new Sale();
         sale.setSaleDateTime(LocalDateTime.now());
-        sale.setCustomer(saleDto.getCustomer()); 
+        sale.setCustomer(saleDto.getCustomer()); // Assuming the customer object is directly passed
 
         BigDecimal totalAmount = BigDecimal.ZERO;
 
+        // Save the sale before processing items to get the saleId
         saleRepo.save(sale);
 
         for (SaleDto.ItemDatail itemDetail : saleDto.getItemDatails()) {
@@ -47,13 +48,13 @@ public class SaleServiceImpl implements SaleService {
             item.setQty(item.getQty() - itemDetail.getQty());
 
             BigDecimal subtotal = item.getUnitPrice().multiply(BigDecimal.valueOf(itemDetail.getQty()));
-            totalAmount = totalAmount.add(subtotal); 
+            totalAmount = totalAmount.add(subtotal);  // Correct BigDecimal addition
 
             sale.addSaleItem(item, itemDetail.getQty(), subtotal);
         }
 
         sale.setTotalPrice(totalAmount);
-        saleRepo.save(sale); 
+        saleRepo.save(sale);  // Save the sale after adding all items
 
         return "Sale created successfully with ID " + sale.getSaleId();
     }

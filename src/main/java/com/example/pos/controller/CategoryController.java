@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,12 +22,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("api/v1/category")
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
     @PostMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Category> createCategory(@RequestBody CategoryDto categoryDto) {
         Category category = new Category();
         category.setCategoryName(categoryDto.getCategoryName());
@@ -35,18 +37,21 @@ public class CategoryController {
     }
 
     @GetMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Category>> getAllCategory() {
         return ResponseEntity.status(200).body(categoryService.getAllCategories());
     }
     
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public CategoryDto getCategoryWithItems(@PathVariable Long id) {
         return categoryService.getByIdCategory(id);
     }
 
     
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Category> updateCategory(@PathVariable Long id, @RequestBody CategoryDto categoryDto) {
         Category category = new Category();
         category.setCategoryName(category.getCategoryName());
@@ -59,6 +64,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
     }
