@@ -1,6 +1,6 @@
 package com.example.pos.entity;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -9,20 +9,28 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Entity
 @Data
-public class Category {
+public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryId;
+    private Long itemId;
 
     @Column(nullable = false)
-    private String categoryName;
+    private String name;
+    
+    @Column(nullable = false)
+    private Integer qty;
 
+    @Column(nullable = false)
+    private BigDecimal unitPrice;
+    
     @JsonIgnore
-    @OneToMany(mappedBy = "category")
-    private List<Item> items;
+    @ManyToOne
+    @JoinColumn(name = "categoryId")
+    private Category category;
 }

@@ -46,7 +46,7 @@ public class CategoryServiceImpl implements CategoryService{
     public CategoryDto getByIdCategory(Long Id) {
         Category category = categoryRepo.findById(Id)
                                 .orElseThrow(() -> new RuntimeException("Category not found"));
-        return new CategoryDto(category.getCategoryId(), category.getCategoryName());
+        return new CategoryDto(category.getCategoryId(), category.getCategoryName(), category.getItems());
     }
   
 }
